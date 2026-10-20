@@ -8,7 +8,7 @@
 
 **An AI agent skill that writes Seedance 2.5 video prompts for [Higgsfield](https://higgsfield.ai).** Describe an idea, attach reference photos or a TikTok you want to recreate, and your agent returns a ready-to-paste prompt. The answer includes the `@Image` reference mapping, the settings to pick and fixes for when a generation fails.
 
-It works in **Claude Code**, **Codex**, **Cursor** and any agent that supports the open [Agent Skills](https://agentskills.io) (`SKILL.md`) format.
+It works in **Claude Code**, **Codex**, **Cursor** and any agent that supports the open [Agent Skills](https://agentskills.io) (`SKILL.md`) format. A walkthrough is on [jutsustudio.com](https://jutsustudio.com/blog/seedance-prompt-skill/).
 
 - [Install](#install)
 - [Example](#example)
@@ -102,6 +102,9 @@ The workflow and the camera vocabulary carry over, but the syntax (brackets, `@I
 
 **Does it generate the video for me?**
 No. It writes the prompt; you paste it into Higgsfield. It can also guide you in generating and checking the reference stills.
+
+**Where can I read more about prompting Seedance?**
+The [Seedance prompt guide](https://jutsustudio.com/blog/seedance-prompts/) covers ByteDance's own formula, and the [Seedance 2.5 guide](https://jutsustudio.com/blog/seedance-2-5-guide/) covers modes, limits and what a clip costs on each platform.
 
 ## Contents
 
