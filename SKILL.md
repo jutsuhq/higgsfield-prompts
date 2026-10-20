@@ -1,5 +1,5 @@
 ---
-name: higgsfield-prompts
+name: higgsfield-seedance-prompt-skill
 description: Write production-ready prompts for Higgsfield video and image models, mainly Seedance 2.5 (text-to-video, omni-reference with images, video and audio, first/last frame, video edit, extension) and Higgsfield's motion-transfer and swap tools. Use when the user wants a video or image prompt for Higgsfield or Seedance, wants to animate photos, recreate a reference video with new characters or objects, build a multi-shot montage from stills, write dialogue or sound for a clip, fix a failed generation, or describe a character, object or scene for a prompt.
 license: MIT
 ---

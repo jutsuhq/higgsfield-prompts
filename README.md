@@ -20,10 +20,10 @@ It works in **Claude Code**, **Codex**, **Cursor** and any agent that supports t
 ## Install
 
 ```bash
-git clone https://github.com/jutsuhq/higgsfield-prompts ~/.claude/skills/higgsfield-prompts
+git clone https://github.com/jutsuhq/higgsfield-seedance-prompt-skill ~/.claude/skills/higgsfield-seedance-prompt-skill
 ```
 
-That installs it for all your Claude Code projects. For a single project, clone it into `.claude/skills/higgsfield-prompts` inside that project instead. For another agent, copy the folder into that agent's skills directory.
+That installs it for all your Claude Code projects. For a single project, clone it into `.claude/skills/higgsfield-seedance-prompt-skill` inside that project instead. For another agent, copy the folder into that agent's skills directory.
 
 Optional: `brew install ffmpeg` lets the skill analyse reference videos (duration, cuts, contact sheet).
 
