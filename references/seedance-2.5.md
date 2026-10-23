@@ -111,6 +111,9 @@ Per 8 seconds: at most 3 characters close together (6 if clearly separated), 4 d
 | Look drifts mid-clip | No style block, or vague location | Add a global style line and a concrete location |
 | Garbled text | Exact text is hard for the model | Use `【 】` with short text, or plan to add text in post |
 | Face drifts from the reference | Weak binding | Use "must strictly follow @ImageN" for the face, and a cleaner, front-lit reference |
+| Character looks plastic or CGI | Studio refs, "perfect" descriptions | Name real flaws and a phone-camera look; use face crops from in-scene previews (see `motion-transfer.md`, `realistic-characters.md`) |
+| Character stops singing or pulling faces | Face references have a closed mouth | Add a `FACE` line: expressions follow @Video1, references define identity only |
+| Swap averages the previews or mixes beats | Previews not tied to time | Add a `TIMELINE` line: "3 s as in @Image2; …" |
 
 ## Before you generate
 

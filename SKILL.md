@@ -11,11 +11,13 @@ Turn the user's idea, reference images and reference videos into a prompt they c
 Read as needed:
 - [`references/seedance-2.5.md`](references/seedance-2.5.md): model limits, the base formula, sound brackets, dialogue, reference binding, staging, timing, budgets, symptom → fix table, QC checklists.
 - [`references/vocabulary.md`](references/vocabulary.md): camera moves, shot sizes, angles, lenses, lighting, film looks, editing terms, with prompt phrasing.
+- [`references/motion-transfer.md`](references/motion-transfer.md): character swaps on a source video: the preview-frame pipeline, upload order, prompt skeleton, failure → fix table, repairing a render in editing.
+- [`references/realistic-characters.md`](references/realistic-characters.md): original characters that look like real people: realism flaws, JSON image prompts, cartoon → live action, the character pack, editing instead of regenerating.
 - [`examples/`](examples/README.md): worked answers for each common request. Before writing, open the example closest to the request.
 
 ## 1. Understand the inputs
 
-- **Reference video**: never guess what is in it. Run `scripts/analyze-video.sh <file>` (needs ffmpeg). It prints duration, resolution and cut timestamps and writes a contact sheet; look at the sheet. Note shot count, timing per shot, camera, framing, lighting and grade, aspect and letterboxing, and what happens.
+- **Reference video**: never guess what is in it. Run `scripts/analyze-video.sh <file>` (needs ffmpeg). It prints duration, resolution and cut timestamps and writes a contact sheet; look at the sheet. For exact poses, pull stills at the beats with `scripts/keyframes.sh <file> 0.5 3 6.2 …`. Note shot count, timing per shot, camera, framing, lighting and grade, aspect and letterboxing, and what happens.
 - **Reference images**: the upload order defines `@Image1`, `@Image2`, … Keep a mapping from tag to file.
 - **Missing pieces**: if the user refers to a file you cannot see, look for recently added files where they usually save downloads before asking.
 
@@ -30,6 +32,8 @@ Read as needed:
 | Change one element of a finished clip | Video edit |
 | Make a clip longer | Video extension |
 | Change only clothing or an object while the person stays | A swap / object-swap tool; if the face must change too, use motion transfer instead |
+
+For any swap where the person changes, follow [`references/motion-transfer.md`](references/motion-transfer.md): make preview stills of the new characters at the source's key beats first, then write the video prompt around them.
 
 ## 3. Answer format
 
@@ -81,12 +85,19 @@ Write one English paragraph.
   5. Rear
   6. Wear
 
+For a character that must look like a real person, or a live-action version of a cartoon hero, use [`references/realistic-characters.md`](references/realistic-characters.md): name real flaws (asymmetry, pores, moles, frizz, phone-camera noise) and a ban list, or use its JSON template.
+
 After the paragraph, add a short note on what was left out (names, brands, text) and on the one or two traits that make it recognisable, to strengthen if the model drifts. See `examples/08-describe-a-character.md`.
 
 ## 7. Fixing a failed generation
 
-Ask for, or look at, the symptom. Find its cause in the symptom → fix table in `references/seedance-2.5.md`, then change only the lines that address it. Do not just reroll or pile on "don't" lines. See `examples/09-repair-a-failed-generation.md`.
+Ask for, or look at, the symptom. Find its cause in the symptom → fix table in `references/seedance-2.5.md` (or, for swaps, the failure → fix table in `references/motion-transfer.md`), then change only the lines that address it. Do not just reroll or pile on "don't" lines. See `examples/09-repair-a-failed-generation.md`. A short glitch in an otherwise good render is cheaper to cut out in editing than to reroll.
 
 ## 8. Generating reference images
 
 When the user needs a character sheet, first frame or set of stills, use whatever image generator is available. Save each image beside its prompt text, for example `NN-name.png` with `prompts/NN-name.txt`. For a batch, generate the images one at a time. Then review them together as a contact sheet (`ffmpeg -pattern_type glob -i '*.png' -vf "scale=420:-1,tile=4x5" -frames:v 1 sheet.jpg`). Before the user spends credits on video, freeze-frame check them: hands, faces, extra objects, lettering. A defect in a reference is copied into every shot.
+
+- Write people with real flaws and one real light source, not studio polish; reuse the same description block for every image of a character.
+- When several characters share a video, make them together in one image first, with one shared realism block, so they match.
+- Fix a nearly good image by editing it ("keep EVERYTHING as it is; change ONLY …") rather than regenerating it.
+- Codex and similar tools output 2:3 or 3:2: center-crop vertical stills to 9:16.

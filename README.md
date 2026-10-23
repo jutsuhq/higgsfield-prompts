@@ -54,7 +54,9 @@ It also adds notes on what to change if the clip drifts or gets rejected.
 - **Sound and dialogue**: Seedance's bracket syntax `( )` music, `< >` SFX, `{ }` dialogue, `【 】` captions, plus language and accent declarations.
 - **Cinematic camera language**: dolly, orbit, whip pan, dolly zoom, FPV, lenses, lighting and film looks (35mm, VHS, early-90s TV).
 - **Moderation-safe characters**: describes original characters and objects by appearance, with no names, brands or logos.
-- **Fixing failed generations**: a symptom → cause → fix table for fused characters, uninvited music, random cuts, garbled text and face drift.
+- **Preview-frame swaps**: keyframes at the beats, preview stills of your characters, face crops and a `TIMELINE` line, so a swap keeps faces, clothes and scale.
+- **Realistic characters**: real-photo flaws, JSON image prompts and cartoon → live-action character packs, so people don't look AI-generated.
+- **Fixing failed generations**: a symptom → cause → fix table for fused characters, uninvited music, random cuts, garbled text and face drift, plus swap failures (flipping capes, oversized characters, lost captions) and cutting glitches out in editing.
 
 ## Seedance prompt examples
 
@@ -112,14 +114,18 @@ The [Seedance prompt guide](https://jutsustudio.com/blog/seedance-prompts/) cove
 SKILL.md                     workflow the agent follows
 references/seedance-2.5.md   model limits, formula, sound brackets, references, staging, repair table, QC
 references/vocabulary.md     camera, shot, lens, lighting, film-look and editing terms with prompt phrasing
+references/motion-transfer.md        swaps: preview-frame pipeline, upload order, failure table, editing repair
+references/realistic-characters.md   real-looking people, JSON image prompts, cartoon to live action
 examples/                    nine worked requests with full answers
 scripts/analyze-video.sh     duration, cut timestamps and contact sheet for a reference video
+scripts/keyframes.sh         stills at given timestamps plus a side-by-side strip
 ```
 
 ## Sources
 
 The rules are condensed from:
 - Higgsfield's [Seedance 2.5 Director's Workshop](https://seedance-25-workshop.higgsfield.app/) and [prompting guide](https://higgsfield.ai/blog/seedance-2-5-prompting-guide);
+- OpenAI's [GPT Image prompting guide](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide) for photorealism;
 - CapCut Dreamina's [motion reference guide](https://dreamina.capcut.com/seedance/seedance-2-5-motion-reference-guide);
 - the official Google Veo, Runway and Kling prompting guides;
 - StudioBinder and No Film School for film terminology.
