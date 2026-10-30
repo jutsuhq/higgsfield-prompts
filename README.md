@@ -19,6 +19,16 @@ It works in **Claude Code**, **Codex**, **Cursor** and any agent that supports t
 
 ## Install
 
+### In the Claude app (claude.ai, desktop)
+
+1. Download [higgsfield-seedance-prompt-skill.zip](https://github.com/jutsuhq/higgsfield-seedance-prompt-skill/releases/latest/download/higgsfield-seedance-prompt-skill.zip).
+2. In Claude, turn on **Settings › Capabilities › Code execution and file creation**.
+3. Open **Customize › Skills**, click **+**, then **Create skill › Upload a skill**, and pick the ZIP.
+
+Skills work on the Free, Pro, Max, Team and Enterprise plans. The ZIP is the same skill with a shorter description, because the Claude app caps it at 200 characters.
+
+### In Claude Code
+
 ```bash
 git clone https://github.com/jutsuhq/higgsfield-seedance-prompt-skill ~/.claude/skills/higgsfield-seedance-prompt-skill
 ```
