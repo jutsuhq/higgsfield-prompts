@@ -8,6 +8,16 @@ How to recreate a source video with your own characters when the face, body and 
 - Cost is per second, so trim the source to the part that carries the joke: cut app outros, end cards and dead air before you upload.
 - A source with cuts works if the prompt describes each shot with its time range. A single continuous take is the safest input.
 
+## Choosing a source
+
+Motion transfer keeps the source's motion, camera, timing and material and changes only who is in it. Before you spend on stills, reject a source that needs something it cannot do:
+
+- **Broken source, broken result.** A hand passing through a prop, a morphing object or teleporting contact in the source comes through in the swap.
+- **Material carries over.** Plastic, vinyl, clay or cartoon rendering in the source stays plastic, vinyl, clay or cartoon. A change of rendering style is a fresh generation, not a swap.
+- **Hidden things have nothing to anchor to.** A person or object that is out of frame or covered for most of the clip comes out unstable. The swapped person should be visible and reasonably large most of the time.
+- **Fast blur and heavy occlusion** (crowds, hands over the face, spins) are where faces drift. Trim to the part where the face is readable.
+- **Action, line or camera cannot change.** A new move, a new angle or new words mean a new generation.
+
 ## The preview-frame pipeline
 
 A swap follows the preview stills more than the prompt text. Spend the effort on the stills.
@@ -17,7 +27,7 @@ A swap follows the preview stills more than the prompt text. Spend the effort on
 3. **Make the anchor preview first.** Use the keyframe as image 1 and the character's references as images 2–4: "Copy image 1 exactly … replace only the man …". The anchor fixes face, clothes and realism for the whole set.
 4. **Make the other previews from the anchor.** Each one gets its keyframe plus the anchor: "Replace only the people with the people from image 2 (same faces, same clothes) … whoever is not visible in image 1 must not appear."
 5. **Compare.** Build a grid with the source keyframes on top and the previews below. Check every preview against its keyframe: pose, body direction, hand grip, size in the frame, every garment.
-6. **Fix single frames.** Regenerate only the broken preview, with the reason written into its prompt. Move rejected versions to an archive folder instead of deleting them.
+6. **Fix single frames.** When the frame is right except one detail (a hand, a garment colour, a prop, a scar), make a point edit instead of a new still: the preview as the only input image, and a prompt that names the one change and keeps everything else ("Change only her left hand: five fingers wrapped around the cup handle. Keep everything else in the image exactly as it is."). A cheap image-edit model (Nano Banana class) does this for a fraction of a regeneration. Regenerate the whole preview only when the pose, framing or identity is wrong, with the reason written into its prompt. Move rejected versions to an archive folder instead of deleting them.
 7. **Cut face references from the previews.** Crop head-and-shoulders from the best preview of each character. Crops match the light and realism of the video. Studio sheets on a grey background pull the result toward a polished, cartoonish look.
 
 Generate stills one at a time. Some generators return a stale image or put the result in the wrong slot, so open every output before you use it.
@@ -32,24 +42,28 @@ Previews first, in timeline order, then one face reference per character:
 | @Image1–5 | previews at the beats, in time order |
 | @Image6–8 | face crops, one per character |
 
+Every image gets exactly one job: a moment of the timeline, a face, a garment or a prop. An image that does two jobs leaks: the background or light of a face reference bleeds into the scene, the light of a prop shot into the skin. Use as few images as do the job; each extra one dilutes the others. Props, hats and helmets are their own images, attached only when they are on screen, never baked into the face reference.
+
 ## Prompt skeleton
 
 ```
 Recreate @Video1 exactly: the same single continuous handheld vertical shot in the same <place>, the same camera moves, framing and timing. No cuts. Only <who> changes.
 
 <ROLE> (the <clothing and position of the person in @Video1>) becomes the <character> from @Image1: an original fictional character, <age and build, the same height and size in the frame as the person in @Video1>, <face>, <hair>, <clothes top to bottom>. The face must strictly follow @Image6.
+Take only the person from @Image6: not its background, framing or light.
 
 PROPS: <what replaces branded or risky objects>.
 MOTION: <the actions in order, "copy every movement of @Video1 with the same energy and timing">.
 TIMELINE: 0.5 s as in @Image1; 3 s as in @Image2; …
 FACE: <expressions following @Video1>. The reference images define only identity, face and clothing, never the expression.
-LOOK: <realism and light, the same for every character>.
+LOOK: <the capture block: phone and its position, the named light sources, grain and compression, skin texture, the lived-in clutter of the place>.
 Audio: keep the original audio of @Video1.
 
 LOCKS: one continuous shot, no cuts, motion, timing and framing identical to @Video1. Exactly <N> people, each always in their own clothes and place. Faces strictly follow @Image6 and @Image7. No <the source's clothing>, no tattoos, no jewellery, no logos.
 ```
 
 - The `TIMELINE` line ties each preview to its beat. Without it the model averages the previews.
+- The `LOOK` line is a capture block written once per project and pasted byte for byte into every preview prompt and the video prompt. The same words every time keep previews and video looking filmed by the same phone; a reworded block drifts toward a clean, catalogue look.
 - The `FACE` line is needed because face references usually have a closed mouth. Without it the character stops singing, laughing or pulling faces.
 - "Keep the original audio" plus no dialogue lines avoids an invented soundtrack. Mixing the original sound back in during editing is the most reliable option.
 
