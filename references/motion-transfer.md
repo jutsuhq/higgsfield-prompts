@@ -21,27 +21,29 @@ Motion transfer keeps the source's motion, camera, timing and material and chang
 
 ## The preview-frame pipeline
 
-A swap follows the preview stills more than the prompt text. Spend the effort on the stills.
+A swap follows the preview stills more than the prompt text, and every still is a fresh guess at each face. Make as few stills as cover the clip: usually one anchor per shot.
 
-1. **Analyse the source.** Run `scripts/analyze-video.sh`. Look at the contact sheet, then pull 4–6 keyframes at the action beats with `scripts/keyframes.sh <video> 0.5 3 6.2 …`: the opening pose, every pose change, a back view if there is one, the punchline, the last frame.
-2. **Map roles.** Name every person in the source by position and clothing ("the man in the white shirt on the right") and assign one target character to each. Use the same mapping words in every preview prompt and in the video prompt.
-3. **Make the anchor preview first.** Use the keyframe as image 1 and the character's references as images 2–4: "Copy image 1 exactly … replace only the man …". The anchor fixes face, clothes and realism for the whole set.
-4. **Make the other previews from the anchor.** Each one gets its keyframe plus the anchor: "Replace only the people with the people from image 2 (same faces, same clothes) … whoever is not visible in image 1 must not appear."
-5. **Compare.** Build a grid with the source keyframes on top and the previews below. Check every preview against its keyframe: pose, body direction, hand grip, size in the frame, every garment.
-6. **Fix single frames.** When the frame is right except one detail (a hand, a garment colour, a prop, a scar), make a point edit instead of a new still: the preview as the only input image, and a prompt that names the one change and keeps everything else ("Change only her left hand: five fingers wrapped around the cup handle. Keep everything else in the image exactly as it is."). A cheap image-edit model (Nano Banana class) does this for a fraction of a regeneration. Regenerate the whole preview only when the pose, framing or identity is wrong, with the reason written into its prompt. Move rejected versions to an archive folder instead of deleting them.
-7. **Cut face references from the previews.** Crop head-and-shoulders from the best preview of each character. Crops match the light and realism of the video. Studio sheets on a grey background pull the result toward a polished, cartoonish look.
+1. **Analyse the source.** Run `scripts/analyze-video.sh` and look at the contact sheet. Pull the keyframe of each shot with `scripts/keyframes.sh <video> 0.5 …`: the clearest moment where the swapped people face the camera.
+2. **Map roles.** Name every person in the source by position and clothing ("the man in the white shirt on the right") and assign one target character to each. Use the same mapping words in the preview prompt and in the video prompt.
+3. **Make one anchor still per shot.** The keyframe is image 1, then one canon face image per character, nothing else: no full-body sheets, no extra references. "Copy image 1 exactly … replace only the man …", with every swapped person together in the same still and the prompt under about 1500 characters. Seven inputs and a long prompt make the generator blend the characters.
+4. **Add a still only for what the anchor cannot show**: an outfit change during the clip, a back view, a person who enters later. Each extra still gets its keyframe plus the anchor: "Replace only the people with the people from image 2 (same faces, same clothes) … whoever is not visible in image 1 must not appear." Do not add stills for every pose change: with four stills there are four versions of each face, and they have to be matched again by hand.
+5. **Compare.** One grid with the keyframe, the anchor and each character's face image. Check face, hair, eye colour, garments, pose, size in the frame.
+6. **Fix single frames.** When the frame is right except one detail (a hand, a garment colour, a prop, a scar), make a point edit instead of a new still: the preview as the only input image, and a prompt that names the one change and keeps everything else ("Change only her left hand: five fingers wrapped around the cup handle. Keep everything else in the image exactly as it is."). Keep it to one or two edits. Regenerate the anchor when the pose, framing or identity is wrong, with the reason written into its prompt. Move rejected versions to an archive folder instead of deleting them.
 
-Generate stills one at a time. Some generators return a stale image or put the result in the wrong slot, so open every output before you use it.
+Some generators return a stale image or put the result in the wrong slot, so open every output before you use it.
 
 ## Upload order
 
-Previews first, in timeline order, then one face reference per character:
+Anchor stills first, in timeline order, then one face image per character:
 
 | Tag | File |
 |---|---|
 | @Video1 | trimmed source |
-| @Image1–5 | previews at the beats, in time order |
-| @Image6–8 | face crops, one per character |
+| @Image1–2 | anchor stills, one per shot, in time order |
+| @Image3–4 | canon face image, one per character |
+| (optional) | full-body front view, only when the anchor does not show the character in full and the clip does |
+
+The face reference is the character's canon face image, not a crop from a preview: the anchor already carries the light and realism of the scene, and a second face per character gives the model two identities to average.
 
 Every image gets exactly one job: a moment of the timeline, a face, a garment or a prop. An image that does two jobs leaks: the background or light of a face reference bleeds into the scene, the light of a prop shot into the skin. Use as few images as do the job; each extra one dilutes the others. Props, hats and helmets are their own images, attached only when they are on screen, never baked into the face reference.
 
@@ -50,8 +52,8 @@ Every image gets exactly one job: a moment of the timeline, a face, a garment or
 ```
 Recreate @Video1 exactly: the same single continuous handheld vertical shot in the same <place>, the same camera moves, framing and timing. No cuts. Only <who> changes.
 
-<ROLE> (the <clothing and position of the person in @Video1>) becomes the <character> from @Image1: an original fictional character, <age and build, the same height and size in the frame as the person in @Video1>, <face>, <hair>, <clothes top to bottom>. The face must strictly follow @Image6.
-Take only the person from @Image6: not its background, framing or light.
+<ROLE> (the <clothing and position of the person in @Video1>) becomes the <character> from @Image1: an original fictional character, <age and build, the same height and size in the frame as the person in @Video1>, <face>, <hair>, <clothes top to bottom>. The face must strictly follow @Image3.
+Take only the person from @Image3: not its background, framing or light.
 
 PROPS: <what replaces branded or risky objects>.
 MOTION: <the actions in order, "copy every movement of @Video1 with the same energy and timing">.
@@ -60,10 +62,10 @@ FACE: <expressions following @Video1>. The reference images define only identity
 LOOK: <the capture block: phone and its position, the named light sources, grain and compression, skin texture, the lived-in clutter of the place>.
 Audio: keep the original audio of @Video1.
 
-LOCKS: one continuous shot, no cuts, motion, timing and framing identical to @Video1. Exactly <N> people, each always in their own clothes and place. Faces strictly follow @Image6 and @Image7. No <the source's clothing>, no tattoos, no jewellery, no logos.
+LOCKS: one continuous shot, no cuts, motion, timing and framing identical to @Video1. Exactly <N> people, each always in their own clothes and place. Faces strictly follow @Image3 and @Image4. No <the source's clothing>, no tattoos, no jewellery, no logos.
 ```
 
-- The `TIMELINE` line ties each preview to its beat. Without it the model averages the previews.
+- The `TIMELINE` line ties each still to its moment. With one anchor per shot it names the shot; without it the model averages the stills.
 - The `LOOK` line is a capture block written once per project and pasted byte for byte into every preview prompt and the video prompt. The same words every time keep previews and video looking filmed by the same phone; a reworded block drifts toward a clean, catalogue look.
 - The eye sentence in `FACE` is there because a blink, wink or squint in the source otherwise comes out as half-open eyes with the irises drifting apart, and a light canon eye colour drifts to two different colours.
 - The `FACE` line is needed because face references usually have a closed mouth. Without it the character stops singing, laughing or pulling faces.
@@ -86,6 +88,7 @@ LOCKS: one continuous shot, no cuts, motion, timing and framing identical to @Vi
 | Eyes are mush, empty dark sockets or white blobs; two different eye colours | The face is under about 80 px wide at the render's resolution, so there is no room for an iris | Measure the face before the stills; crop the source tighter, render at a higher resolution or pick another source. A prompt line does not fix it |
 | Half-open eyes with irises drifting apart | A blink, wink or squint in the source | The eye sentence in `FACE`; check those moments on an eye strip |
 | Upscaled video has painted-looking eyes, jagged white highlights | The upscaler invents detail where the draft had none | Compare eye strips of the draft and the upscale at the same moments before delivery |
+| Faces, hair or headwear differ from still to still | Each still invented the face on its own | One anchor per shot; extra stills only for an outfit change, a back view or a late entrance |
 | Short glitch on one body part (a ghost limb, a prop changing colour) | Overlapping limbs during fast motion | Find the frames on a 10–30 fps strip and cut that span during editing (see below); a reroll costs the full price again |
 
 ## Repairing a finished render in editing
