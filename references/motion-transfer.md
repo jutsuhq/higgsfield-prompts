@@ -4,7 +4,7 @@ How to recreate a source video with your own characters when the face, body and 
 
 ## Limits to plan around
 
-- Motion-transfer tools usually take a 4–15 s source and 1–8 images. Seedance omni-reference takes up to 30 s.
+- Motion-transfer tools usually take a 4–15 s source and 1–10 images (Genjutsu Lite in Jutsu 0.2.6 takes 10). Seedance omni-reference takes up to 30 s.
 - Cost is per second, so trim the source to the part that carries the joke: cut app outros, end cards and dead air before you upload.
 - A source with cuts works if the prompt describes each shot with its time range. A single continuous take is the safest input.
 
@@ -15,6 +15,7 @@ Motion transfer keeps the source's motion, camera, timing and material and chang
 - **Broken source, broken result.** A hand passing through a prop, a morphing object or teleporting contact in the source comes through in the swap.
 - **Material carries over.** Plastic, vinyl, clay or cartoon rendering in the source stays plastic, vinyl, clay or cartoon. A change of rendering style is a fresh generation, not a swap.
 - **Hidden things have nothing to anchor to.** A person or object that is out of frame or covered for most of the clip comes out unstable. The swapped person should be visible and reasonably large most of the time.
+- **Small faces lose their eyes.** The render's own resolution sets how much eye there is. Measure the face width in the source scaled to the render's short side (480 px for a 480p draft): from about 130 px the eyes hold; 80–130 px they go soft and light irises smear; below 80 px they break in every prompt (dark empty sockets, white blobs for irises, two different eye colours, pupils looking apart). An upscaler does not bring them back. Crop the source tighter around the swapped people, render at a higher resolution, or pick another source.
 - **Fast blur and heavy occlusion** (crowds, hands over the face, spins) are where faces drift. Trim to the part where the face is readable.
 - **Action, line or camera cannot change.** A new move, a new angle or new words mean a new generation.
 
@@ -55,7 +56,7 @@ Take only the person from @Image6: not its background, framing or light.
 PROPS: <what replaces branded or risky objects>.
 MOTION: <the actions in order, "copy every movement of @Video1 with the same energy and timing">.
 TIMELINE: 0.5 s as in @Image1; 3 s as in @Image2; …
-FACE: <expressions following @Video1>. The reference images define only identity, face and clothing, never the expression.
+FACE: <expressions following @Video1>. The reference images define only identity, face and clothing, never the expression. Both eyes of each person: the same <colour> iris in both eyes, round pupils centred in the iris, both eyes look at the same point. Gaze direction, blinks and squints follow @Video1: when the eyes in @Video1 close or narrow, the eyelids close the same way, no half-open eyes with drifting irises.
 LOOK: <the capture block: phone and its position, the named light sources, grain and compression, skin texture, the lived-in clutter of the place>.
 Audio: keep the original audio of @Video1.
 
@@ -64,6 +65,7 @@ LOCKS: one continuous shot, no cuts, motion, timing and framing identical to @Vi
 
 - The `TIMELINE` line ties each preview to its beat. Without it the model averages the previews.
 - The `LOOK` line is a capture block written once per project and pasted byte for byte into every preview prompt and the video prompt. The same words every time keep previews and video looking filmed by the same phone; a reworded block drifts toward a clean, catalogue look.
+- The eye sentence in `FACE` is there because a blink, wink or squint in the source otherwise comes out as half-open eyes with the irises drifting apart, and a light canon eye colour drifts to two different colours.
 - The `FACE` line is needed because face references usually have a closed mouth. Without it the character stops singing, laughing or pulling faces.
 - "Keep the original audio" plus no dialogue lines avoids an invented soundtrack. Mixing the original sound back in during editing is the most reliable option.
 
@@ -81,6 +83,9 @@ LOCKS: one continuous shot, no cuts, motion, timing and framing identical to @Vi
 | Readable signs or banners in the background | Real text and brand risk | "Any text on the banner is blurred and unreadable" |
 | One character looks like CGI next to two real-looking ones | Refs from different pipelines | One shared realism block for all characters; face crops from the same preview set |
 | Rejected for a resemblance to real people | A source with recognisable actors, or a ref that resembles one | Never upload source faces; upload only your previews and crops; make the character clearly original |
+| Eyes are mush, empty dark sockets or white blobs; two different eye colours | The face is under about 80 px wide at the render's resolution, so there is no room for an iris | Measure the face before the stills; crop the source tighter, render at a higher resolution or pick another source. A prompt line does not fix it |
+| Half-open eyes with irises drifting apart | A blink, wink or squint in the source | The eye sentence in `FACE`; check those moments on an eye strip |
+| Upscaled video has painted-looking eyes, jagged white highlights | The upscaler invents detail where the draft had none | Compare eye strips of the draft and the upscale at the same moments before delivery |
 | Short glitch on one body part (a ghost limb, a prop changing colour) | Overlapping limbs during fast motion | Find the frames on a 10–30 fps strip and cut that span during editing (see below); a reroll costs the full price again |
 
 ## Repairing a finished render in editing
@@ -94,4 +99,5 @@ LOCKS: one continuous shot, no cuts, motion, timing and framing identical to @Vi
 ## Checking a render
 
 - A contact sheet at 2 fps for the whole clip, and 10–30 fps strips around turns, contact and fast motion.
+- Eyes: crop both eyes of each face at 8–12 moments (close-ups, turns, blinks, the smallest face) from the source, the draft and the upscale side by side. Both eyes the same colour, pupils centred and looking the same way, blinks where the source blinks.
 - Same person throughout, nobody swaps places, clothes do not change, the size in the frame matches the source, nothing from the source person leaks back (tattoos, logos, a hoodie).
